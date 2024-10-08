@@ -40,18 +40,15 @@ const verifyToken = (req, res, next) => {
     });
 };
 
-
-
 // Rutas
 
 // Obtener todas las canchas
 app.get('/canchas', (req, res) => {
-    const clienteId = req.query.cliente_id; // Obtener el cliente_id de la consulta
+    const clienteId = req.query.cliente_id;
 
-    // Modificar la consulta para filtrar por cliente_id
     let query = 'SELECT * FROM canchas';
     if (clienteId) {
-        query += ' WHERE cliente_id = ?'; // Filtrar las canchas por cliente_id
+        query += ' WHERE cliente_id = ?';
     }
 
     db.query(query, [clienteId], (err, results) => {
@@ -114,6 +111,19 @@ app.post('/api/login', (req, res) => {
         res.status(200).send({ auth: true, token });
     });
 });
+
+function authMiddleware(req, res, next) {
+    const token = req.headers['authorization'];
+    if (!token) return res.status(403).json({ message: 'Token requerido' });
+  
+    jwt.verify(token, SECRET_KEY, (err, decoded) => {
+      if (err) return res.status(403).json({ message: 'Token inválido' });
+  
+      req.user = decoded;
+      next();
+    });
+  }
+  
 
 // Escuchar en el puerto especificado
 app.listen(port, () => {
