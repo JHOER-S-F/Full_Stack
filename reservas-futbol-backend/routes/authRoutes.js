@@ -4,9 +4,11 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const pool = require('../config/db');
 const jwtConfig = require('../config/jwtConfig');
+const verifyToken = require('../middleware/verifyToken'); // Para las rutas protegidas
 
 const router = express.Router();
 
+// Registro de usuario
 router.post('/register', [
     body('nombre').notEmpty().withMessage('El nombre es requerido'),
     body('correo').isEmail().withMessage('Correo inválido'),
@@ -36,6 +38,7 @@ router.post('/register', [
     }
 });
 
+// Inicio de sesión
 router.post('/login', [
     body('email').isEmail().withMessage('Correo inválido'),
     body('password').isLength({ min: 6 }).withMessage('La contraseña es requerida'),
@@ -65,6 +68,8 @@ router.post('/login', [
         res.status(500).json({ message: 'Error en el servidor', error: err.message });
     }
 });
+
+
 
 module.exports = router;
 

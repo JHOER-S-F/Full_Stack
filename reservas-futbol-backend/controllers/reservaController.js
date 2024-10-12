@@ -1,4 +1,4 @@
-const pool = require('../config/db'); // Conexión a la base de datos
+const pool = require('../config/db');  // Conexión a la base de datos
 
 // Obtener todas las canchas
 exports.getCanchas = async (req, res) => {
@@ -14,7 +14,7 @@ exports.getCanchas = async (req, res) => {
     }
 
     try {
-        const [results] = await pool.query(query, params);
+        const [results] = await pool.query('SELECT * FROM canchas');
         res.json(results);
     } catch (err) {
         console.error('Error al obtener las canchas:', err); // Log de error
