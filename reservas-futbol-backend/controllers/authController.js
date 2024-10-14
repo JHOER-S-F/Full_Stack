@@ -1,8 +1,8 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { validationResult } = require('express-validator');
-const pool = require('../config/db');  // Conexión a la base de datos
-const jwtConfig = require('../config/jwtConfig');  // Configuración JWT
+const pool = require('../config/db');
+const jwtConfig = require('../config/jwtConfig');
 
 // Función para registrar un nuevo usuario
 exports.register = async (req, res) => {
@@ -11,7 +11,7 @@ exports.register = async (req, res) => {
         return res.status(400).json({ errors: errors.array() });
     }
 
-    const { nombre, email, password } = req.body; // Cambiado 'correo' a 'email'
+    const { nombre, email, password } = req.body;
 
     try {
         const [existingUser] = await pool.query('SELECT * FROM usuarios WHERE correo = ?', [email]);
