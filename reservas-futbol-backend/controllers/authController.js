@@ -11,22 +11,22 @@ exports.register = async (req, res) => {
         return res.status(400).json({ errors: errors.array() });
     }
 
-    const { nombre, email, password } = req.body;
+    const { nombre, correo, password } = req.body;
 
     try {
-        const [existingUser] = await pool.query('SELECT * FROM usuarios WHERE correo = ?', [email]);
+        const [existingUser] = await pool.query('SELECT * FROM usuarios WHERE correo = ?', [correo]);
         if (existingUser.length > 0) {
             return res.status(409).json({ message: 'El correo ya está registrado' });
         }
 
         const hashedPassword = bcrypt.hashSync(password, 8);
-        const [result] = await pool.query('INSERT INTO usuarios (nombre, correo, password) VALUES (?, ?, ?)', [nombre, email, hashedPassword]);
+        const [result] = await pool.query('INSERT INTO usuarios (nombre, correo, password) VALUES (?, ?, ?)', [nombre, correo, hashedPassword]);
 
         const token = jwt.sign({ id: result.insertId }, jwtConfig.secret, { expiresIn: jwtConfig.expiresIn });
 
         res.status(201).json({ auth: true, token });
     } catch (err) {
-        console.error(err); // Agregar logs para depuración
+        console.error(err);
         res.status(500).json({ message: 'Error en el servidor', error: 'No se pudo registrar el usuario' });
     }
 };
@@ -38,10 +38,10 @@ exports.login = async (req, res) => {
         return res.status(400).json({ errors: errors.array() });
     }
 
-    const { email, password } = req.body; // Cambiado 'correo' a 'email'
+    const { correo, password } = req.body;
 
     try {
-        const [results] = await pool.query('SELECT * FROM usuarios WHERE correo = ?', [email]);
+        const [results] = await pool.query('SELECT * FROM usuarios WHERE correo = ?', [correo]);
         if (results.length === 0) {
             return res.status(404).json({ message: 'Usuario no encontrado' });
         }
@@ -55,7 +55,35 @@ exports.login = async (req, res) => {
         const token = jwt.sign({ id: user.id }, jwtConfig.secret, { expiresIn: jwtConfig.expiresIn });
         res.status(200).json({ auth: true, token });
     } catch (err) {
-        console.error(err); // Agregar logs para depuración
+        console.error(err);
         res.status(500).json({ message: 'Error en el servidor', error: 'No se pudo iniciar sesión' });
+    }
+};
+
+// Función para obtener la información del usuario
+exports.user = async (req, res) => {
+    const token = req.headers['authorization'];
+
+    if (!token) {
+        return res.status(401).json({ message: 'No se proporcionó token.' });
+    }
+
+    try {
+        const decoded = jwt.verify(token.replace('Bearer ', ''), jwtConfig.secret);
+        const usuarioId = decoded.id;
+
+        const [user] = await pool.query('SELECT nombre, correo FROM usuarios WHERE id = ?', [usuarioId]);
+
+        if (user.length === 0) {
+            return res.status(404).json({ message: 'Usuario no encontrado.' });
+        }
+
+        res.status(200).json(user[0]);
+    } catch (error) {
+        console.error('Error al obtener la información del usuario:', error);
+        if (error.name === 'JsonWebTokenError') {
+            return res.status(403).json({ message: 'Token inválido.' });
+        }
+        res.status(500).json({ message: 'Error en el servidor', error: error.message });
     }
 };

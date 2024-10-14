@@ -1,74 +1,29 @@
 const express = require('express');
-const { body, validationResult } = require('express-validator');
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-const pool = require('../config/db');
-const jwtConfig = require('../config/jwtConfig');
-const verifyToken = require('../middleware/verifyToken'); // Para las rutas protegidas
+const { check } = require('express-validator');
+const authController = require('../controllers/authController');
+const authMiddleware = require('../middleware/authMiddleware'); 
 
 const router = express.Router();
 
-// Registro de usuario
-router.post('/register', [
-    body('nombre').notEmpty().withMessage('El nombre es requerido'),
-    body('correo').isEmail().withMessage('Correo inválido'),
-    body('password').isLength({ min: 6 }).withMessage('La contraseña debe tener al menos 6 caracteres'),
-], async (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
-    }
+router.post(
+    '/register',
+    [
+        check('nombre', 'El nombre es obligatorio').not().isEmpty(),
+        check('correo', 'Agrega un correo válido').isEmail(),
+        check('password', 'El password debe ser de 6 caracteres como mínimo').isLength({ min: 6 })
+    ],
+    authController.register
+);
 
-    const { nombre, correo, password } = req.body;
+router.post(
+    '/login',
+    [
+        check('correo', 'Agrega un correo válido').isEmail(),
+        check('password', 'El password es obligatorio').exists()
+    ],
+    authController.login
+);
 
-    try {
-        const [existingUser] = await pool.query('SELECT * FROM usuarios WHERE correo = ?', [correo]);
-        if (existingUser.length > 0) {
-            return res.status(409).json({ message: 'El correo ya está registrado' });
-        }
-
-        const hashedPassword = bcrypt.hashSync(password, 8);
-        const [result] = await pool.query('INSERT INTO usuarios (nombre, correo, password) VALUES (?, ?, ?)', [nombre, correo, hashedPassword]);
-
-        const token = jwt.sign({ id: result.insertId }, jwtConfig.secret, { expiresIn: jwtConfig.expiresIn });
-
-        res.status(201).json({ auth: true, token });
-    } catch (err) {
-        res.status(500).json({ message: 'Error en el servidor', error: err.message });
-    }
-});
-
-// Inicio de sesión
-router.post('/login', [
-    body('email').isEmail().withMessage('Correo inválido'),
-    body('password').isLength({ min: 6 }).withMessage('La contraseña es requerida'),
-], async (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
-    }
-
-    const { email, password } = req.body;
-
-    try {
-        const [results] = await pool.query('SELECT * FROM usuarios WHERE correo = ?', [email]);
-        if (results.length === 0) {
-            return res.status(404).json({ message: 'Usuario no encontrado' });
-        }
-
-        const user = results[0];
-        const passwordIsValid = bcrypt.compareSync(password, user.password);
-        if (!passwordIsValid) {
-            return res.status(401).json({ auth: false, token: null, message: 'Contraseña incorrecta' });
-        }
-
-        const token = jwt.sign({ id: user.id }, jwtConfig.secret, { expiresIn: jwtConfig.expiresIn });
-        res.status(200).json({ auth: true, token });
-    } catch (err) {
-        res.status(500).json({ message: 'Error en el servidor', error: err.message });
-    }
-});
-
-
+router.get('/user', authMiddleware, authController.user);
 
 module.exports = router;
