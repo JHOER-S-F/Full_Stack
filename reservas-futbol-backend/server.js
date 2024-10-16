@@ -1,3 +1,4 @@
+// server.js
 require('dotenv').config(); // Cargar variables de entorno desde .env
 
 const express = require('express');
@@ -6,7 +7,8 @@ const bodyParser = require('body-parser');
 const { validationResult, ValidationError } = require('express-validator');
 const pool = require('./config/db');  // Importar configuración de la base de datos
 const authRoutes = require('./routes/authRoutes'); // Rutas de autenticación
-const reservaRoutes = require('./routes/reservaRoutes'); // Rutas de reservas
+const reservaRoutes = require('./routes/reservaRoutes'); // Rutas para reservas
+const camRoutes = require('./routes/camRoutes'); // Rutas para mensajes de contacto
 const verifyToken = require('./middleware/verifyToken'); // Middleware para verificar token JWT
 
 const app = express();
@@ -24,6 +26,7 @@ app.use(bodyParser.json()); // Para poder procesar JSON en las solicitudes
 // Rutas
 app.use('/api/auth', authRoutes); // Rutas para autenticación
 app.use('/api/reservas', verifyToken, reservaRoutes); // Rutas para reservas protegidas
+app.use('/api/cam', camRoutes); // Rutas para mensajes de contacto
 
 // Ruta protegida de ejemplo
 app.get('/api/protected', verifyToken, async (req, res) => {
