@@ -17,12 +17,13 @@ module.exports = {
       },
     },
     plugins: [
-      // Plugin para inyectar variables de entorno seguras
+      // Plugin para inyectar variables de entorno específicas
       new webpack.DefinePlugin({
-        'process.env': {
-          ...process.env, // Incluir todas las variables de entorno
-          VUE_APP_API_URL: JSON.stringify(process.env.VUE_APP_API_URL), // Exponer la API_URL
-        },
+        'process.env.VUE_APP_API_URL': JSON.stringify(process.env.VUE_APP_API_URL),
+        'process.env.VUE_APP_ANOTHER_VARIABLE': JSON.stringify(process.env.VUE_APP_ANOTHER_VARIABLE),
+        'process.env.VUE_APP_API_KEY': JSON.stringify(process.env.VUE_APP_API_KEY),
+        'process.env.VUE_APP_OTHER_VARIABLE': JSON.stringify(process.env.VUE_APP_OTHER_VARIABLE),
+        'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
         __VUE_OPTIONS_API__: true, // Activa la Options API en Vue.js
         __VUE_PROD_DEVTOOLS__: false, // Desactiva las devtools de Vue en producción
         __VUE_PROD_HYDRATION_MISMATCH_DETAILS__: JSON.stringify(true), // Evita la advertencia de hidratación

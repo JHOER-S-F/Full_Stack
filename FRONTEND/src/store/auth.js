@@ -1,6 +1,6 @@
 import { createStore } from 'vuex';
 import axios from 'axios';
-import {jwtDecode} from 'jwt-decode'; // Importación corregida
+import { jwtDecode } from 'jwt-decode'; // Importación corregida
 
 // Estado inicial
 const state = {
@@ -55,9 +55,7 @@ const actions = {
     try {
       // Cambiamos a POST para el logout
       await axios.post('http://localhost:3000/api/auth/logout');
-
-      // Limpiar token y usuario después de una respuesta exitosa
-      commit('CLEAR_AUTH_TOKEN');
+      commit('CLEAR_AUTH_TOKEN'); // Limpiar token y usuario después de una respuesta exitosa
     } catch (error) {
       console.error('Error en el logout:', error);
       throw error; // Lanza el error para manejarlo en el componente

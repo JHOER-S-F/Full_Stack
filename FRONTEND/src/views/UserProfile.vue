@@ -5,9 +5,14 @@
         <img src="https://via.placeholder.com/50" alt="Perfil" />
       </div>
       <div v-if="isDropdownOpen" class="perfil-dropdown-menu">
-        <p><strong>BIENVENIDO</strong> {{ user.nombre }}</p>
-        <p><strong>CORREO</strong> {{ user.correo }}</p>
-        <button class="logout-button" @click="handleLogout">Cerrar Sesión</button>
+        <div class="perfil-content">
+          <div class="perfil-circle">
+            <img src="https://via.placeholder.com/50" alt="Perfil" />
+          </div>
+          <p><strong>BIENVENIDO</strong> {{ user.nombre }}</p>
+          <p><strong>CORREO</strong> {{ user.correo }}</p>
+          <button class="logout-button" @click="handleLogout">Cerrar Sesión</button>
+        </div>
       </div>
     </div>
   </div>
@@ -105,6 +110,15 @@ export default {
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   padding: 15px;
   width: 200px;
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Centra el contenido verticalmente */
+}
+
+.perfil-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .logout-button {
