@@ -1,13 +1,12 @@
 import { createStore } from 'vuex';
 import axios from 'axios';
-import  jwt_decode  from 'jwt-decode'; // Importar correctamente jwt_decode
+import {jwtDecode} from 'jwt-decode'; // Importación corregida
 
 // Estado inicial
 const state = {
-  authToken: localStorage.getItem('token') || null, // Cargar el token desde localStorage si existe
-  tokenExpiration: localStorage.getItem('tokenExpiration') || null, // Cargar la expiración del token desde localStorage
-  user: null, // Información del usuario autenticado
-  profilePicture: null, // Ruta de la foto de perfil del usuario
+  authToken: localStorage.getItem('token') || null, // Carga el token del localStorage
+  tokenExpiration: localStorage.getItem('tokenExpiration') || null, // Carga la expiración del token
+  user: null, // Información del usuario
 };
 
 // Mutaciones
@@ -19,60 +18,49 @@ const mutations = {
   CLEAR_AUTH_TOKEN(state) {
     state.authToken = null;
     state.tokenExpiration = null;
-    state.user = null; // Limpiar información del usuario
-    state.profilePicture = null; // Limpiar la foto de perfil
+    state.user = null; // Limpia el estado del usuario
+    localStorage.removeItem('token'); // Limpia el token en localStorage
+    localStorage.removeItem('tokenExpiration'); // Limpia la expiración en localStorage
   },
   SET_USER(state, user) {
     state.user = user;
-  },
-  SET_PROFILE_PICTURE(state, picturePath) {
-    state.profilePicture = picturePath;
   },
 };
 
 // Acciones
 const actions = {
-  async login({ commit, dispatch }, credentials) {
+  async login({ commit }, credentials) {
     try {
-      // Realiza la solicitud para autenticar al usuario
       const response = await axios.post('http://localhost:3000/api/auth/login', credentials);
       const { token } = response.data;
-
-      // Decodificar el token para obtener la expiración
-      const decodedToken = jwt_decode(token);
-      const expirationTime = decodedToken.exp * 1000; // Convertir segundos en milisegundos
+      const expirationDuration = 3600000; // 1 hora por defecto
+      const expirationTime = Date.now() + expirationDuration;
 
       // Almacenar token y su expiración en localStorage
       localStorage.setItem('token', token);
       localStorage.setItem('tokenExpiration', expirationTime);
 
-      // Mutar el estado del token y la expiración
       commit('SET_AUTH_TOKEN', { token, expiration: expirationTime });
 
-      // Decodificar el token para obtener la información del usuario
-      const user = jwt_decode(token);
+      // Decodificar el token para obtener el usuario
+      const user = jwtDecode(token);
       commit('SET_USER', user);
-
-      // Obtener información adicional del usuario desde la API
-      await dispatch('fetchUser');
     } catch (error) {
       console.error('Error al iniciar sesión:', error);
-      throw error; // Lanza el error para que pueda ser manejado en el componente
+      throw error; // Lanza el error para manejarlo en el componente
     }
   },
 
   async logout({ commit }) {
     try {
-      // Llamada a la API para cerrar sesión
+      // Cambiamos a POST para el logout
       await axios.post('http://localhost:3000/api/auth/logout');
 
-      // Limpiar el token y el usuario después de un logout exitoso
+      // Limpiar token y usuario después de una respuesta exitosa
       commit('CLEAR_AUTH_TOKEN');
-      localStorage.removeItem('token');
-      localStorage.removeItem('tokenExpiration');
     } catch (error) {
       console.error('Error en el logout:', error);
-      throw error;
+      throw error; // Lanza el error para manejarlo en el componente
     }
   },
 
@@ -81,64 +69,35 @@ const actions = {
     const tokenExpiration = localStorage.getItem('tokenExpiration');
     const currentTime = Date.now();
 
-    // Verificar si el token es válido y no ha expirado
     if (token && tokenExpiration && currentTime < parseInt(tokenExpiration, 10)) {
       commit('SET_AUTH_TOKEN', { token, expiration: tokenExpiration });
-      const user = jwt_decode(token); // Decodificar el token
-      commit('SET_USER', user); // Mutar el estado del usuario
+      const user = jwtDecode(token); // Decodificar el token
+      commit('SET_USER', user);
     } else {
-      commit('CLEAR_AUTH_TOKEN'); // Si el token no es válido o ha expirado, limpiarlo
-      localStorage.removeItem('token');
-      localStorage.removeItem('tokenExpiration');
+      commit('CLEAR_AUTH_TOKEN'); // Token expirado o inexistente
     }
   },
 
   async fetchUser({ commit }) {
     try {
-      // Obtener información adicional del usuario
       const response = await axios.get('http://localhost:3000/api/auth/user', {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       });
-      commit('SET_USER', response.data); // Almacenar la información del usuario
-
-      // Almacenar la foto de perfil del usuario si existe
-      if (response.data.foto) {
-        commit('SET_PROFILE_PICTURE', response.data.foto);
-      }
+      commit('SET_USER', response.data); // Almacena la información del usuario
     } catch (error) {
       console.error('Error al obtener la información del usuario:', error);
       if (error.response && error.response.status === 401) {
-        commit('CLEAR_AUTH_TOKEN'); // Limpiar el estado si el token ha expirado
-        localStorage.removeItem('token');
-        localStorage.removeItem('tokenExpiration');
+        // Si el token no es válido o ha expirado
+        commit('CLEAR_AUTH_TOKEN');
       }
-    }
-  },
-
-  async updateProfilePicture({ commit }, formData) {
-    try {
-      // Llamada a la API para actualizar la foto de perfil
-      const response = await axios.post('http://localhost:3000/api/auth/user/update-photo', formData, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-
-      // Actualizar la foto de perfil en el estado
-      commit('SET_PROFILE_PICTURE', response.data.foto);
-    } catch (error) {
-      console.error('Error al actualizar la foto de perfil:', error);
-      throw error;
     }
   },
 };
 
 // Getters
 const getters = {
-  isLoggedIn: (state) => !!state.authToken && Date.now() < parseInt(state.tokenExpiration, 10), // Verifica si el usuario está autenticado y si el token es válido
-  getUser: (state) => state.user, // Obtiene la información del usuario
-  getProfilePicture: (state) => state.profilePicture, // Obtiene la foto de perfil del usuario
+  isLoggedIn: (state) => !!state.authToken && Date.now() < parseInt(state.tokenExpiration, 10),
+  getUser: (state) => state.user,
 };
 
 // Crear el store

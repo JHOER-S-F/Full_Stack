@@ -3,6 +3,11 @@ require('dotenv').config();
 const path = require('path');
 const webpack = require('webpack');
 
+// Definir la URL del backend según el entorno
+const backendURL = process.env.NODE_ENV === 'production'
+  ? 'https://api.production.com' // URL del backend en producción
+  : 'http://localhost:3000'; // URL del backend en desarrollo
+
 module.exports = {
   // Configuración de Webpack
   configureWebpack: {
@@ -15,8 +20,8 @@ module.exports = {
       // Plugin para inyectar variables de entorno seguras
       new webpack.DefinePlugin({
         'process.env': {
-          VUE_APP_API_URL: JSON.stringify(process.env.VUE_APP_API_URL), // Exponer solo la variable específica
-          // Puedes agregar otras variables aquí según sea necesario
+          ...process.env, // Incluir todas las variables de entorno
+          VUE_APP_API_URL: JSON.stringify(process.env.VUE_APP_API_URL), // Exponer la API_URL
         },
         __VUE_OPTIONS_API__: true, // Activa la Options API en Vue.js
         __VUE_PROD_DEVTOOLS__: false, // Desactiva las devtools de Vue en producción
@@ -34,12 +39,10 @@ module.exports = {
   devServer: {
     port: 8080, // Puerto del servidor de desarrollo
     open: true, // Abrir el navegador automáticamente
-    historyApiFallback: true, // Habilita el soporte para Single Page Applications (SPA)
+    historyApiFallback: true, // Soporte para Single Page Applications (SPA)
     proxy: {
       '/api': {
-        target: process.env.NODE_ENV === 'production'
-          ? 'https://api.production.com' // URL del backend en producción
-          : 'http://localhost:3000', // URL del backend en desarrollo
+        target: backendURL, // Utilizar la URL del backend según el entorno
         changeOrigin: true,
       },
     },
@@ -47,7 +50,7 @@ module.exports = {
 
   // Configuración adicional
   lintOnSave: process.env.NODE_ENV !== 'production', // Deshabilitar linter en producción
-  productionSourceMap: false, // Deshabilitar source maps en producción para mejorar el rendimiento
+  productionSourceMap: false, // Deshabilitar source maps en producción
   outputDir: 'dist', // Carpeta de salida para el build
   assetsDir: 'static', // Carpeta para archivos estáticos
 };

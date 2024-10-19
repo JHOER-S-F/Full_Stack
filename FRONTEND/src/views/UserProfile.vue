@@ -1,139 +1,124 @@
 <template>
-  <div class="user-profile">
-    <h2>Perfil de Usuario</h2>
-
-    <div class="profile-info">
-      <div class="profile-photo">
-        <img :src="userPhotoUrl" alt="Foto de perfil" v-if="userPhotoUrl" />
-        <p v-else>No hay foto de perfil</p>
+  <div class="perfil-container">
+    <div class="perfil-dropdown">
+      <div class="perfil-circle" @click="toggleDropdown">
+        <img src="https://via.placeholder.com/50" alt="Perfil" />
       </div>
-
-      <div class="profile-details">
-        <p><strong>Nombre:</strong> {{ user.nombre }}</p>
-        <p><strong>Correo:</strong> {{ user.correo }}</p>
+      <div v-if="isDropdownOpen" class="perfil-dropdown-menu">
+        <p><strong>BIENVENIDO</strong> {{ user.nombre }}</p>
+        <p><strong>CORREO</strong> {{ user.correo }}</p>
+        <button class="logout-button" @click="handleLogout">Cerrar Sesión</button>
       </div>
-    </div>
-
-    <div class="update-photo">
-      <h3>Actualizar Foto de Perfil</h3>
-      <input type="file" @change="onFileChange" />
-      <button @click="updatePhoto">Actualizar Foto</button>
-    </div>
-
-    <div v-if="errorMessage" class="error-message">
-      <p>{{ errorMessage }}</p>
-    </div>
-
-    <div v-if="successMessage" class="success-message">
-      <p>{{ successMessage }}</p>
     </div>
   </div>
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex';
+import { mapGetters, mapActions } from 'vuex';
+import axios from 'axios';
 
 export default {
   data() {
     return {
-      selectedFile: null, // Archivo seleccionado para subir
-      errorMessage: '',
-      successMessage: '',
+      isDropdownOpen: false, // Estado para manejar la visibilidad del menú desplegable
     };
   },
   computed: {
-    ...mapGetters(['getUser']),
-    user() {
-      return this.getUser || {};
-    },
-    userPhotoUrl() {
-      return this.user.foto ? `http://localhost:3000/${this.user.foto}` : null; // Ajusta según la estructura del backend
-    },
+    ...mapGetters({
+      user: 'getUser', // Getter que obtiene la información del usuario desde Vuex
+    }),
   },
   methods: {
-    ...mapActions(['fetchUser', 'updateProfilePicture']), // Usa la acción correcta del Vuex store
+    ...mapActions({
+      logout: 'logout', // Acción para cerrar sesión desde Vuex
+    }),
 
-    onFileChange(event) {
-      this.selectedFile = event.target.files[0]; // Asigna el archivo seleccionado
+    async fetchUser() {
+      try {
+        const response = await axios.get('http://localhost:3000/api/auth/user', {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        });
+        this.$store.commit('SET_USER', response.data); // Guardar usuario en Vuex
+      } catch (error) {
+        console.error('Error al obtener la información del usuario:', error);
+        if (error.response && error.response.status === 401) {
+          this.$router.push('/login'); // Redirigir al login si no está autorizado
+        }
+      }
     },
 
-    async updatePhoto() {
-      if (!this.selectedFile) {
-        this.errorMessage = 'Por favor, selecciona una foto para subir.';
-        return;
-      }
-
-      const formData = new FormData();
-      formData.append('foto', this.selectedFile); // El nombre del campo debe coincidir con el backend
-
+    async handleLogout() {
       try {
-        await this.updateProfilePicture(formData); // Acción de Vuex para subir la foto
-        this.successMessage = 'Foto de perfil actualizada correctamente.';
-        this.errorMessage = '';
-        await this.fetchUser(); // Actualiza la información del usuario
+        await this.logout(); // Acción para cerrar sesión
+        localStorage.removeItem('token'); // Eliminar token del almacenamiento local
+        this.$router.push('/login'); // Redirigir al login
       } catch (error) {
-        this.errorMessage = 'Error al actualizar la foto de perfil.';
-        this.successMessage = '';
+        console.error('Error al cerrar sesión:', error);
       }
+    },
+
+    toggleDropdown() {
+      this.isDropdownOpen = !this.isDropdownOpen; // Alternar el menú desplegable
     },
   },
-  async mounted() {
-    await this.fetchUser(); // Cargar la información del usuario al montar el componente
+  mounted() {
+    this.fetchUser(); // Obtener información del usuario cuando el componente se monta
   },
 };
 </script>
 
 <style scoped>
-.user-profile {
-  max-width: 600px;
-  margin: 0 auto;
-  padding: 20px;
-  background-color: #f9f9f9;
-  border-radius: 8px;
+.perfil-container {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 100;
 }
 
-.profile-info {
-  display: flex;
-  align-items: center;
-  margin-bottom: 20px;
+.perfil-dropdown {
+  position: relative;
 }
 
-.profile-photo img {
-  width: 150px;
-  height: 150px;
+.perfil-circle {
+  width: 50px;
+  height: 50px;
   border-radius: 50%;
+  overflow: hidden;
+  cursor: pointer;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.perfil-circle img {
+  width: 100%;
+  height: 100%;
   object-fit: cover;
 }
 
-.profile-details {
-  margin-left: 20px;
+.perfil-dropdown-menu {
+  position: absolute;
+  top: 60px;
+  right: 0;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  padding: 15px;
+  width: 200px;
 }
 
-.update-photo {
-  margin-top: 20px;
-}
-
-button {
-  margin-top: 10px;
-  padding: 10px 20px;
-  background-color: #4caf50;
+.logout-button {
+  background-color: #ff4d4f;
   color: white;
+  padding: 10px 20px;
   border: none;
-  border-radius: 4px;
+  border-radius: 5px;
   cursor: pointer;
+  margin-top: 20px;
+  width: 100%;
 }
 
-button:hover {
-  background-color: #45a049;
-}
-
-.error-message {
-  color: red;
-  margin-top: 10px;
-}
-
-.success-message {
-  color: green;
-  margin-top: 10px;
+.logout-button:hover {
+  background-color: #ff7875;
 }
 </style>

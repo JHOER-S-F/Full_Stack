@@ -34,7 +34,7 @@
 
 <script>
 import { mapActions } from 'vuex'; 
-import jwt_decode from 'jwt-decode'; // Importación corregida
+import {jwtDecode} from 'jwt-decode'; // Importación correcta de jwt-decode
 
 export default {
   data() {
@@ -51,13 +51,14 @@ export default {
 
     async loginUser() {
       try {
+        this.errorMessage = null; // Limpiar mensaje de error previo
         // Llama a la acción de login del store
         await this.login(this.credentials);
 
         // Obtiene el token desde localStorage
         const token = localStorage.getItem('token');
         if (token) {
-          const user = jwt_decode(token); // Decodifica el token
+          const user = jwtDecode(token); // Decodifica el token para obtener información del usuario
           console.log('Usuario:', user); // Muestra la información del usuario en la consola
         }
 
@@ -73,7 +74,7 @@ export default {
         if (error.response.status === 401) {
           this.errorMessage = 'Correo o contraseña incorrectos'; // Mensaje específico para error 401
         } else if (error.response.data && error.response.data.errors) {
-          this.errorMessage = error.response.data.errors; // Mensaje de error del backend
+          this.errorMessage = error.response.data.errors.join(', '); // Mensaje de error del backend
         } else {
           this.errorMessage = 'Error en el servidor. Inténtalo más tarde.'; // Mensaje para otros errores
         }
@@ -86,6 +87,7 @@ export default {
 };
 </script>
 
+}
 <style scoped>
 .login-container {
   text-align: center;
