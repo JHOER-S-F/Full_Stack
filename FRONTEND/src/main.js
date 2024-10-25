@@ -4,6 +4,7 @@ import router from './router';
 import store from './store/auth';
 import axios from 'axios';
 import './styles/global.css'; // Importar estilos globales
+<link href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Advent+Pro:ital,wght@0,100..900;1,100..900&family=Agdasima:wght@400;700&family=Concert+One&family=Poppins&family=Rajdhani&display=swap" rel="stylesheet"></link>
 
 // FontAwesome imports
 import { library } from '@fortawesome/fontawesome-svg-core';

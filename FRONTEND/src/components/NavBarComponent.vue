@@ -1,6 +1,10 @@
 <template>
   <nav class="navbar">
     <ul class="nav-list">
+      
+      <h1><a href="/">SoccerBook</a></h1>
+
+
       <!-- Enlaces visibles para todos -->
       <li><router-link to="/contacto" class="nav-link">Contacto</router-link></li>
       <li><router-link to="/sobre-nosotros" class="nav-link">Sobre Nosotros</router-link></li>
