@@ -93,4 +93,3 @@ exports.logout = (req, res) => {
     // Normalmente el logout se maneja eliminando el token del frontend
     res.status(200).json({ auth: false, token: null, message: 'Logout exitoso' });
 };
-
