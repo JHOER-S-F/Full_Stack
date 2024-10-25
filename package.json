@@ -3,25 +3,17 @@
   "version": "1.0.0",
   "main": "backend/server.js",
   "scripts": {
-    "start": "concurrently \"npm run backend\" \"npm run frontend\"", 
+    "start": "concurrently \"npm run backend\" \"npm run frontend\"",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "backend": "cd ./backend && node server.js",
+    "backend": "cd ./backend && npm start",
     "frontend": "cd ./frontend && npm run serve"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": "",
+  "description": "SoccerBook application with separate frontend and backend",
   "devDependencies": {
     "concurrently": "^9.0.1",
     "webpack": "^5.95.0"
-  },
-  "dependencies": {
-    "bcryptjs": "^2.4.3",
-    "dotenv": "^16.4.5",
-    "jsonwebtoken": "^9.0.2",
-    "jwt-decode": "^4.0.0",
-    "vue-router": "^4.4.5",
-    "vuex": "^4.0.2"
   }
 }
