@@ -1,4 +1,4 @@
-# reservas-futbol-frontend
+# frontend
 
 ## Project setup
 ```
