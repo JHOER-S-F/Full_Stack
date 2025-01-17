@@ -1,37 +1,46 @@
-// Cambiar el color del texto del encabezado //
+/* Cambiar el color del texto del encabezado */
 h1 {
-  color: #2a9d8f;
+  color: #4caf50; /* Color verde para el encabezado */
 }
 
-// Establecer un color de fondo para la página //
+/* Establecer un color de fondo para la página */
 body {
-  background-color: #f0f4f8;
+  background-color: #f9f9f9; /* Fondo claro */
   font-family: Arial, sans-serif;
   margin: 0;
   padding: 20px;
 }
 
-// Márgenes o padding para el párrafo //
+/* Márgenes o padding para el párrafo */
 p {
   margin: 20px 0;
-  padding: 10px;
-  line-height: 1.6;
+  padding: 15px; /* Mayor separación para el párrafo */
+  line-height: 1.8; /* Mejor legibilidad */
 }
 
-// Cambiar el estilo de la lista desordenada //
+/* Cambiar el estilo de la lista desordenada */
 ul {
-  list-style-type: square;
-  color: #264653;
-  padding-left: 20px;
+  list-style-type: circle; /* Cambiar marcador a círculo */
+  color: #333; /* Texto más oscuro */
+  padding-left: 25px;
 }
 
-// Efecto hover para el enlace //
+/* Efecto hover para el enlace */
 a {
-  color: #e76f51;
+  color: #007bff; /* Azul para el enlace */
   text-decoration: none;
 }
 
 a:hover {
-  color: #f4a261;
+  color: #0056b3; /* Azul más oscuro al pasar el cursor */
   text-decoration: underline;
 }
+
+/* Márgenes para la imagen */
+img {
+  margin: 20px 0; /* Separación vertical */
+  display: block;
+  max-width: 100%; /* Asegura que la imagen sea responsive */
+  height: auto;
+}
+
