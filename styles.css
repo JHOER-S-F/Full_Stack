@@ -5,9 +5,10 @@ body {
   padding: 20px;
 }
 h1 {
-  color: #22ddad ;
+  color: #38c788;
   text-align: center;
 }
+
 p {
   margin: 20px 0;
   padding: 15px;
@@ -19,7 +20,7 @@ ul {
   list-style-type: circle; 
   color: #333; 
   padding-left: 25px;
-  margit: 20% 20%
+  margit: 20% 20%;
   color: #4d5d41;
 }
 
