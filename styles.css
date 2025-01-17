@@ -1,0 +1,37 @@
+// Cambiar el color del texto del encabezado //
+h1 {
+  color: #2a9d8f;
+}
+
+// Establecer un color de fondo para la página //
+body {
+  background-color: #f0f4f8;
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 20px;
+}
+
+// Márgenes o padding para el párrafo //
+p {
+  margin: 20px 0;
+  padding: 10px;
+  line-height: 1.6;
+}
+
+// Cambiar el estilo de la lista desordenada //
+ul {
+  list-style-type: square;
+  color: #264653;
+  padding-left: 20px;
+}
+
+// Efecto hover para el enlace //
+a {
+  color: #e76f51;
+  text-decoration: none;
+}
+
+a:hover {
+  color: #f4a261;
+  text-decoration: underline;
+}
