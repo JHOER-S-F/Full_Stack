@@ -1,15 +1,15 @@
 /* Cambiar el color del texto del encabezado */
 h1 {
-  color: #4caf50; /* Color verde para el encabezado */
+  color: #22ddad /* Color verde para el encabezado */
+  text-align: center;
 }
 
 /* Establecer un color de fondo para la página */
 body {
-  background-color: #f9f9f9; /* Fondo claro */
+  background-color: #edfdfc; /* Fondo claro */
   font-family: Arial, sans-serif;
   margin: 0;
   padding: 20px;
-  text-align: center;
 }
 
 /* Márgenes o padding para el párrafo */
@@ -24,6 +24,7 @@ ul {
   list-style-type: circle; /* Cambiar marcador a círculo */
   color: #333; /* Texto más oscuro */
   padding-left: 25px;
+  margit: 20% 0%
 }
 
 /* Efecto hover para el enlace */
