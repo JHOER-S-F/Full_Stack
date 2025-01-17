@@ -9,6 +9,7 @@ body {
   font-family: Arial, sans-serif;
   margin: 0;
   padding: 20px;
+  text-align: center;
 }
 
 /* Márgenes o padding para el párrafo */
@@ -37,10 +38,15 @@ a:hover {
 }
 
 /* Márgenes para la imagen */
+/* Márgenes para la imagen */
 img {
-  margin: 20px 0; /* Separación vertical */
+  margin: 20px auto; /* Centrar horizontalmente */
   display: block;
   max-width: 100%; /* Asegura que la imagen sea responsive */
   height: auto;
+  border: 2px solid #ddd; /* Borde suave */
+  border-radius: 8px; /* Bordes redondeados */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra ligera */
 }
+
 
