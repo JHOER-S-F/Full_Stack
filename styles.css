@@ -1,53 +1,48 @@
-/* Cambiar el color del texto del encabezado */
-h1 {
-  color: #22ddad /* Color verde para el encabezado */
-  text-align: center;
-}
-
-/* Establecer un color de fondo para la página */
 body {
-  background-color: #edfdfc; /* Fondo claro */
+  background-color: #edfdfc;
   font-family: Arial, sans-serif;
   margin: 0;
   padding: 20px;
 }
-
-/* Márgenes o padding para el párrafo */
+h1 {
+  color: #22ddad ;
+  text-align: center;
+}
 p {
   margin: 20px 0;
-  padding: 15px; /* Mayor separación para el párrafo */
-  line-height: 1.8; /* Mejor legibilidad */
+  padding: 15px;
+  line-height: 1.8;
 }
 
-/* Cambiar el estilo de la lista desordenada */
+
 ul {
-  list-style-type: circle; /* Cambiar marcador a círculo */
-  color: #333; /* Texto más oscuro */
+  list-style-type: circle; 
+  color: #333; 
   padding-left: 25px;
-  margit: 20% 0%
+  margit: 20% 20%
+  color: #4d5d41;
 }
 
-/* Efecto hover para el enlace */
+
 a {
-  color: #007bff; /* Azul para el enlace */
+  color: #007bff; 
   text-decoration: none;
 }
 
 a:hover {
-  color: #0056b3; /* Azul más oscuro al pasar el cursor */
+  color: #0056b3;
   text-decoration: underline;
 }
 
-/* Márgenes para la imagen */
-/* Márgenes para la imagen */
+
 img {
-  margin: 20px auto; /* Centrar horizontalmente */
+  margin: 20px auto; 
   display: block;
-  max-width: 100%; /* Asegura que la imagen sea responsive */
+  max-width: 100%;
   height: auto;
-  border: 2px solid #ddd; /* Borde suave */
-  border-radius: 8px; /* Bordes redondeados */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra ligera */
+  border: 2px solid #ddd; 
+  border-radius: 8px; 
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 
